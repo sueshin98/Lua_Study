@@ -4,29 +4,31 @@
 class Player
 {
 public:
-	Player()
-	{
-		playerLevel_ = 5;
-		questLevel_ = 1;
-	}
+	Player();
+	~Player() {}
 
-	~Player()
-	{
-		// ...
-	}
+	void ReadQuest(QuestID questId);
+	bool AcceptQuest(QuestID questId);
+	bool ClearQuest(QuestID questId);
+	void ProvideReward(Quest* quest);
 
-	bool StartQuest(QuestID questId);
-
+	void UpdateKillQuestProgress(MonsterID monsterId);
 
 	int GetPlayerLevel();
+	int GetPlayerGrade();
+	int GetPlayerExp();
+	int GetPlayerGold();
+
 	void SetPlayerLevel(int level);
-
-	int GetQuestLevel();
-	void SetQuestLevel(int level);
-
+	void SetPlayerGrade(int level);
+	void SetPlayerExp(int exp);
+	void SetPlayerGold(int gold);
 
 private:
-	int playerLevel_;
-	int questLevel_;
+	std::map<QuestID, Quest*> questMap_;
 
+	int playerLevel_;
+	int playerGrade;
+	int playerExp_;
+	int playerGold_;
 };

@@ -1,8 +1,12 @@
 #pragma once
 #include <string>
+#include <tuple>
+
 
 #include "sol/sol.hpp"
+#include "watcher.hpp"
 #include "Define.hpp"
+
 
 namespace CLua
 {
@@ -11,7 +15,12 @@ namespace CLua
 	void Init();
 
 	void RegisterClass();
+	void RegisterScripts();
 	void RunScript(std::string fileName);
+	void EnalbeFileWatcher();
 
-	bool CheckAvailable(const char* questName, Player* player);
+	Quest* GetQuest(QuestID questId);
+	bool CheckAcceptQuest(const char* questName, Player* player);
+	bool CheckClearQuest(const char* questName, Quest* quest);
 }
+

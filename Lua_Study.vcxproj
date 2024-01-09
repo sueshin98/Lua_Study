@@ -138,18 +138,23 @@
     <ClCompile Include="Quest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="quest1.lua" />
-    <None Include="quest2.lua" />
-    <None Include="temp.lua" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="CLua.hpp" />
     <ClInclude Include="Define.hpp" />
+    <ClInclude Include="watcher.hpp" />
+    <ClInclude Include="Item.hpp" />
     <ClInclude Include="magic_enum.hpp" />
+    <ClInclude Include="Monster.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="Quest.hpp" />
     <ClInclude Include="sol\config.hpp" />
     <ClInclude Include="sol\sol.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="scripts\item.lua" />
+    <None Include="scripts\quest2.lua" />
+    <None Include="scripts\temp.lua" />
+    <None Include="script\monster.lua" />
+    <None Include="script\quest1.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
