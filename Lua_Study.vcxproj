@@ -134,10 +134,12 @@
   <ItemGroup>
     <ClCompile Include="CLua.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Quest.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BattleEvent.hpp" />
     <ClInclude Include="CLua.hpp" />
     <ClInclude Include="Define.hpp" />
     <ClInclude Include="watcher.hpp" />
@@ -150,11 +152,11 @@
     <ClInclude Include="sol\sol.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="scripts\item.lua" />
-    <None Include="scripts\quest2.lua" />
-    <None Include="scripts\temp.lua" />
-    <None Include="script\monster.lua" />
-    <None Include="script\quest1.lua" />
+    <None Include="scripts\Base\item.lua" />
+    <None Include="scripts\Base\monster.lua" />
+    <None Include="scripts\Base\quest.lua" />
+    <None Include="scripts\Quest\MonsterSlayer.lua" />
+    <None Include="scripts\Quest\quest2.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

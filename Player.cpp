@@ -1,6 +1,8 @@
 #include "Player.hpp"
 #include "CLua.hpp"
-
+#include "Quest.hpp"
+#include "Monster.hpp"
+#include "BattleEvent.hpp"
 
 Player::Player()
 {
@@ -8,46 +10,53 @@ Player::Player()
 	playerGrade = 1;
 }
 
-void Player::ReadQuest(QuestID questId)
+bool Player::CheckPlayerAlive()
+{
+	return (playerHP_ > 0);
+}
+
+/// <summary>
+/// 
+/// </summary>
+
+void Player::ReadQuest(int questId)
 {
 	auto quest = CLua::GetQuest(questId);
 
-	std::cout << "questName : " << quest->GetName() << std::endl;
-	std::cout << "questDescription : " << quest->GetDescription() << std::endl;
+	std::cout << "==================================" << std::endl;
+	std::cout << "[" << quest.GetName() << "]" << std::endl;
+	std::cout << "	" << quest.GetDescription() << std::endl;
+	std::cout << std::endl;
 
-	auto questType = quest->GetType();
-	switch (questType)
-	{
-		case QuestType::Kill:
-		{
-			std::cout << "questGoal : Kill Monster" << std::endl;
-			auto& targetList = quest->GetKillTargetList();
+	auto questType = quest.GetType();
 
-			for (auto& target : targetList) {
-				std::string targetName(magic_enum::enum_name<MonsterID>(target.first));
-				std::cout << "targetName : " << targetName << std::endl;
-				std::cout << "targetAmount : " << target.second.targetAmount << std::endl;
-			}
+	std::cout << "퀘스트 목표" << std::endl;
+	auto& targetList = quest.GetKillTargetList();
+	if (targetList.empty() == false) {
+		for (auto& target : targetList) {
+			std::cout << "	" << CLua::GetMonsterName(target.first) << " : " << target.second.targetAmount << std::endl;
 		}
+		std::cout << std::endl;
 	}
 
-	auto questReward = quest->GetReward();
-	std::cout << "questReward - exp : " << questReward.expReward << std::endl;
-	std::cout << "questReward - gold : " << questReward.goldReward << std::endl;
+	auto questReward = quest.GetReward();
+	std::cout << "퀘스트 보상" << std::endl;
+	std::cout << "	exp : " << questReward.expReward << std::endl;
+	std::cout << "	gold : " << questReward.goldReward << std::endl;
+	std::cout << "	item : ";
 	for (auto& item : questReward.itemReward) {
-		std::string itemName(magic_enum::enum_name<ItemID>(std::get<0>(item)));
-		std::cout << "questReward - Item : " << itemName << "(" << std::get<1>(item) << ")" << std::endl;
+		std::cout << CLua::GetItemName(std::get<0>(item)) << "(" << std::get<1>(item) << ") ";
 	}
-
-	delete(quest);
+	std::cout << std::endl << "==================================" << std::endl;
 }
 
-bool Player::AcceptQuest(QuestID questId)
+bool Player::AcceptQuest(int questId)
 {
-	auto result = CLua::CheckAcceptQuest(magic_enum::enum_name<QuestID>(questId).data(), this);
+	auto result = CLua::CheckAcceptQuest(questId, this);
 
 	if (result == true) {
-		auto quest = CLua::GetQuest(questId);
+		auto quest = new Quest(CLua::GetQuest(questId));
+
 		questMap_.emplace(questId, quest);
 
 		std::cout << "Quest Accepted!" << std::endl;
@@ -60,31 +69,28 @@ bool Player::AcceptQuest(QuestID questId)
 	return true;
 }
 
-bool Player::ClearQuest(QuestID questId)
+bool Player::ClearQuest(int questId)
 {
 	auto questPair = questMap_.find(questId);
-
 	if (questPair == questMap_.end()) {
 		std::cout << "Not Accepted Quest!" << std::endl;
 		return false;
 	}
 
 	auto quest = questPair->second;
-
-	auto result = CLua::CheckClearQuest(magic_enum::enum_name<QuestID>(questId).data(), quest);
-	if (result == true)	{
-		std::cout << "Quest " << quest->GetName() << " Clear!" << std::endl;
-
-		// 보상 지급
-		ProvideReward(quest);
-
-		questMap_.erase(questPair);
-		delete(quest);	
-	}
-	else {
+	auto result = CLua::CheckClearQuest(questId, this, quest);
+	if (result == false) {
 		std::cout << "Quest completion conditions have not been met" << std::endl;
 		return false;
 	}
+
+	std::cout << "Quest " << quest->GetName() << " Clear!" << std::endl;
+
+	// 보상 지급
+	ProvideReward(quest);
+
+	questMap_.erase(questPair);
+	delete(quest);	
 
 	return true;
 }
@@ -106,7 +112,7 @@ void Player::ProvideReward(Quest* quest)
 	}
 }
 
-void Player::UpdateKillQuestProgress(MonsterID monsterId)
+void Player::UpdateKillQuestProgress(int monsterId)
 {
 	for (auto& questPair : questMap_) {
 		auto quest = questPair.second;
@@ -124,50 +130,183 @@ void Player::UpdateKillQuestProgress(MonsterID monsterId)
 	}
 }
 
+void Player::DecreaseHP(int damage)
+{
+	playerHP_ -= damage;
+}
+
+bool Player::HandleBattleEvent(BattleEvent& battleEvent)
+{
+	auto event = battleEvent.GetEvent();
+	switch (event)
+	{
+		case BATTLE_EVENT::MonsterDead:
+		{
+			CLua::ProvideBattleReward(this, monster_);
+			UpdateKillQuestProgress(monster_->GetMonsterID());
+			break;
+		}
+		case BATTLE_EVENT::PlayerDead:
+		{
+			std::cout << "Player Win!" << std::endl;
+			break;
+		}
+		case BATTLE_EVENT::MonsterRun:
+		{
+			std::cout << "Monster Run!" << std::endl;
+			break;
+		}
+		case BATTLE_EVENT::PlayerRun:
+		{
+			std::cout << "Player Run!" << std::endl;
+			break;
+		}
+	}
+
+	return (event != BATTLE_EVENT::None);
+}
+
+void Player::BattlePlayerTurn(BattleEvent& event)
+{
+
+}
+
+void Player::ProcessBattle()
+{
+	BattleEvent event;
+
+	while (monster_->CheckMonsterAlive() && CheckPlayerAlive()) {
+		auto isPlayerFirst = CLua::CheckBattleTurn(this, monster_);
+
+		if (isPlayerFirst == false) {
+			CLua::BattleMonsterTurn(this, monster_, event);
+			if (HandleBattleEvent(event)) {
+				break;
+			}
+			BattlePlayerTurn(event);
+			if (HandleBattleEvent(event)) {
+				break;
+			}
+		}
+		else {
+			BattlePlayerTurn(event);
+			if (HandleBattleEvent(event)) {
+				break;
+			}
+			CLua::BattleMonsterTurn(this, monster_, event);
+			if (HandleBattleEvent(event)) {
+				break;
+			}
+		}
+	}
+}
+
+void Player::StartBattle(int monsterId)
+{
+	auto monster = new Monster(CLua::GetMonster(monsterId));
+	monster_ = monster;
+
+	CLua::InitBattle(this, monster);
+
+	ProcessBattle();
+}
+
+
 /// <summary>
 /// 
 /// </summary>
 
-int Player::GetPlayerLevel()
+int Player::GetLevel()
 {
 	return playerLevel_;
 }
 
-int Player::GetPlayerGrade()
+int Player::GetGrade()
 {
 	return playerGrade;
 }
 
-int Player::GetPlayerExp()
+int Player::GetExp()
 {
 	return playerExp_;
 }
 
-int Player::GetPlayerGold()
+int Player::GetGold()
 {
 	return playerGold_;
 }
+
+int Player::GetSpeed()
+{
+	return playerSpeed_;
+}
+
+int Player::GetAtk()
+{
+	return playerAtk_;
+}
+
+int Player::GetDef()
+{
+	return playerDef_;
+}
+
+int Player::GetHP()
+{
+	return playerHP_;
+}
+
+int Player::GetMP()
+{
+	return playerMP_;
+}
+
 
 /// <summary>
 /// 
 /// </summary>
 
-void Player::SetPlayerLevel(int level)
+void Player::SetLevel(int level)
 {
 	playerLevel_ = level;
 }
 
-void Player::SetPlayerGrade(int level)
+void Player::SetGrade(int level)
 {
 	playerGrade = level;
 }
 
-void Player::SetPlayerExp(int exp)
+void Player::SetExp(int exp)
 {
 	playerExp_ = exp;
 }
 
-void Player::SetPlayerGold(int gold)
+void Player::SetGold(int gold)
 {
 	playerGold_ = gold;
+}
+
+void Player::SetSpeed(int speed)
+{
+	playerSpeed_ = speed;
+}
+
+void Player::SetAtk(int atk)
+{
+	playerAtk_ = atk;
+}
+
+void Player::SetDef(int def)
+{
+	playerDef_ = def;
+}
+
+void Player::SetHp(int hp)
+{
+	playerHP_ = hp;
+}
+
+void Player::SetMp(int mp)
+{
+	playerMP_ = mp;
 }

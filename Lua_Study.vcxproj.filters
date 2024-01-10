@@ -5,6 +5,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Quest.cpp" />
+    <ClCompile Include="Monster.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CLua.hpp" />
@@ -16,27 +17,35 @@
     <ClInclude Include="sol\sol.hpp" />
     <ClInclude Include="Item.hpp" />
     <ClInclude Include="watcher.hpp" />
+    <ClInclude Include="Monster.hpp" />
+    <ClInclude Include="BattleEvent.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="scripts">
       <UniqueIdentifier>{aaefd286-c1b1-4c5a-a04d-c4f070f8a96b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="scripts\Quest">
+      <UniqueIdentifier>{4d22c320-f672-4842-bf7e-dc92fdfab3bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts\Base">
+      <UniqueIdentifier>{675334b4-5b74-4884-89dd-77c31735d782}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="script\monster.lua">
-      <Filter>scripts</Filter>
+    <None Include="scripts\Quest\MonsterSlayer.lua">
+      <Filter>scripts\Quest</Filter>
     </None>
-    <None Include="script\quest1.lua">
-      <Filter>scripts</Filter>
+    <None Include="scripts\Quest\quest2.lua">
+      <Filter>scripts\Quest</Filter>
     </None>
-    <None Include="scripts\quest2.lua">
-      <Filter>scripts</Filter>
+    <None Include="scripts\Base\item.lua">
+      <Filter>scripts\Base</Filter>
     </None>
-    <None Include="scripts\temp.lua">
-      <Filter>scripts</Filter>
+    <None Include="scripts\Base\monster.lua">
+      <Filter>scripts\Base</Filter>
     </None>
-    <None Include="scripts\item.lua">
-      <Filter>scripts</Filter>
+    <None Include="scripts\Base\quest.lua">
+      <Filter>scripts\Base</Filter>
     </None>
   </ItemGroup>
 </Project>

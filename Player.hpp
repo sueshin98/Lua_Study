@@ -1,5 +1,9 @@
 #pragma once
-#include "Define.hpp"
+#include <map>
+
+class Quest;
+class Monster;
+class BattleEvent;
 
 class Player
 {
@@ -7,28 +11,53 @@ public:
 	Player();
 	~Player() {}
 
-	void ReadQuest(QuestID questId);
-	bool AcceptQuest(QuestID questId);
-	bool ClearQuest(QuestID questId);
+	bool CheckPlayerAlive();
+
+	void ReadQuest(int questId);
+	bool AcceptQuest(int questId);
+	bool ClearQuest(int questId);
 	void ProvideReward(Quest* quest);
 
-	void UpdateKillQuestProgress(MonsterID monsterId);
+	void StartBattle(int monsterId);
+	void ProcessBattle();
+	bool HandleBattleEvent(BattleEvent& event);
+	void BattlePlayerTurn(BattleEvent& event);
+	void UpdateKillQuestProgress(int monsterId);
+	
+	void DecreaseHP(int damage);
 
-	int GetPlayerLevel();
-	int GetPlayerGrade();
-	int GetPlayerExp();
-	int GetPlayerGold();
+	int GetLevel();
+	int GetGrade();
+	int GetExp();
+	int GetGold();
+	int GetSpeed();
+	int GetAtk();
+	int GetDef();
+	int GetHP();
+	int GetMP();
 
-	void SetPlayerLevel(int level);
-	void SetPlayerGrade(int level);
-	void SetPlayerExp(int exp);
-	void SetPlayerGold(int gold);
+	void SetLevel(int level);
+	void SetGrade(int level);
+	void SetExp(int exp);
+	void SetGold(int gold);
+	void SetSpeed(int speed);
+	void SetAtk(int atk);
+	void SetDef(int def);
+	void SetHp(int hp);
+	void SetMp(int mp);
 
 private:
-	std::map<QuestID, Quest*> questMap_;
+	std::map<int, Quest*> questMap_;
+	Monster* monster_;
 
 	int playerLevel_;
 	int playerGrade;
 	int playerExp_;
 	int playerGold_;
+
+	int playerSpeed_;
+	int playerAtk_;
+	int playerDef_;
+	int playerHP_;
+	int playerMP_;
 };

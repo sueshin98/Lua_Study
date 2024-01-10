@@ -6,3 +6,9 @@ monster.id = {
 	MONSTER3 = 3,
 	MONSTER4 = 4
 }
+
+monster.state = {
+	Normal = 0,
+	Fear = 1,
+	Excitement = 2
+}

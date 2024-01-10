@@ -1,7 +1,7 @@
 #include "Quest.hpp"
 
-Quest::Quest(QuestID questId, const char* questName)
-	: questID_(questId), questName_(questName)
+Quest::Quest(int questId, std::string questName)
+	: questId_(questId), questName_(questName)
 {
 }
 
@@ -22,9 +22,9 @@ bool Quest::CheckKillTarget()
 /// 
 /// </summary>
 
-void Quest::SetQuestID(QuestID questId)
+void Quest::SetQuestID(int questId)
 {
-	questID_ = questId;
+	questId_ = questId;
 };
 
 void Quest::SetType(QuestType type)
@@ -37,7 +37,7 @@ void Quest::SetRarity(QuestRarity rarity)
 	questRarity_ = rarity;
 };
 
-void Quest::SetKillTargetList(std::map<MonsterID, QuestKillTarget> targetList)
+void Quest::SetKillTargetList(std::map<int, QuestKillTarget> targetList)
 {
 	questKillTargetList_ = targetList;
 };
@@ -61,9 +61,9 @@ void Quest::SetReward(QuestReward& reward)
 /// 
 /// </summary>
 
-QuestID Quest::GetQuestID()
+int Quest::GetQuestID()
 {
-	return questID_;
+	return questId_;
 };
 
 QuestType Quest::GetType()
@@ -76,7 +76,7 @@ QuestRarity Quest::GetRarity()
 	return questRarity_;
 };
 
-std::map<MonsterID, QuestKillTarget>& Quest::GetKillTargetList()
+std::map<int, QuestKillTarget>& Quest::GetKillTargetList()
 {
 	return questKillTargetList_;
 };
