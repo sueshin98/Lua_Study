@@ -132,27 +132,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BattleEvent.cpp" />
-    <ClCompile Include="CLua.cpp" />
-    <ClCompile Include="Field.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Monster.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Quest.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="BattleEvent.hpp" />
-    <ClInclude Include="CLua.hpp" />
-    <ClInclude Include="Define.hpp" />
-    <ClInclude Include="Field.hpp" />
     <ClInclude Include="Include\config.hpp" />
     <ClInclude Include="Include\sol.hpp" />
     <ClInclude Include="Include\watcher.hpp" />
-    <ClInclude Include="Item.hpp" />
-    <ClInclude Include="Monster.hpp" />
-    <ClInclude Include="Player.hpp" />
-    <ClInclude Include="Quest.hpp" />
-    <ClInclude Include="sol\config.hpp" />
+    <ClInclude Include="srcs\BattleEvent.hpp" />
+    <ClInclude Include="srcs\CLua.hpp" />
+    <ClInclude Include="srcs\Define.hpp" />
+    <ClInclude Include="srcs\Field.hpp" />
+    <ClInclude Include="srcs\Item.hpp" />
+    <ClInclude Include="srcs\Monster.hpp" />
+    <ClInclude Include="srcs\Player.hpp" />
+    <ClInclude Include="srcs\Quest.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="scripts\Base\field.lua" />
@@ -165,6 +155,15 @@
     <None Include="scripts\Monster\Slime.lua" />
     <None Include="scripts\Quest\MonsterSlayer.lua" />
     <None Include="scripts\Quest\LevelUp.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="srcs\BattleEvent.cpp" />
+    <ClCompile Include="srcs\CLua.cpp" />
+    <ClCompile Include="srcs\Field.cpp" />
+    <ClCompile Include="srcs\main.cpp" />
+    <ClCompile Include="srcs\Monster.cpp" />
+    <ClCompile Include="srcs\Player.cpp" />
+    <ClCompile Include="srcs\Quest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

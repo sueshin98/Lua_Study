@@ -2,8 +2,8 @@
 #include <string>
 #include <tuple>
 
-#include "include/sol.hpp"
-#include "include/watcher.hpp"
+#include "../include/sol.hpp"
+#include "../include/watcher.hpp"
 
 class Player;
 class Monster;

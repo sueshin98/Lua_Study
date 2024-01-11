@@ -1,24 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="CLua.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Quest.cpp" />
-    <ClCompile Include="Monster.cpp" />
-    <ClCompile Include="BattleEvent.cpp" />
-    <ClCompile Include="Field.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="CLua.hpp" />
-    <ClInclude Include="Define.hpp" />
-    <ClInclude Include="Player.hpp" />
-    <ClInclude Include="Quest.hpp" />
-    <ClInclude Include="sol\config.hpp" />
-    <ClInclude Include="Item.hpp" />
-    <ClInclude Include="Monster.hpp" />
-    <ClInclude Include="BattleEvent.hpp" />
-    <ClInclude Include="Field.hpp" />
     <ClInclude Include="Include\config.hpp">
       <Filter>Include</Filter>
     </ClInclude>
@@ -27,6 +9,30 @@
     </ClInclude>
     <ClInclude Include="Include\watcher.hpp">
       <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="srcs\BattleEvent.hpp">
+      <Filter>srcs</Filter>
+    </ClInclude>
+    <ClInclude Include="srcs\CLua.hpp">
+      <Filter>srcs</Filter>
+    </ClInclude>
+    <ClInclude Include="srcs\Define.hpp">
+      <Filter>srcs</Filter>
+    </ClInclude>
+    <ClInclude Include="srcs\Field.hpp">
+      <Filter>srcs</Filter>
+    </ClInclude>
+    <ClInclude Include="srcs\Item.hpp">
+      <Filter>srcs</Filter>
+    </ClInclude>
+    <ClInclude Include="srcs\Monster.hpp">
+      <Filter>srcs</Filter>
+    </ClInclude>
+    <ClInclude Include="srcs\Player.hpp">
+      <Filter>srcs</Filter>
+    </ClInclude>
+    <ClInclude Include="srcs\Quest.hpp">
+      <Filter>srcs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -47,6 +53,9 @@
     </Filter>
     <Filter Include="Include">
       <UniqueIdentifier>{10f80da6-e43b-4915-80df-72d37539f34f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="srcs">
+      <UniqueIdentifier>{dc247e52-f802-4ac7-ad26-49634c87ac10}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -80,5 +89,28 @@
     <None Include="scripts\Field\Forest.lua">
       <Filter>scripts\Field</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="srcs\BattleEvent.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="srcs\CLua.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="srcs\Field.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="srcs\main.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="srcs\Monster.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="srcs\Player.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
+    <ClCompile Include="srcs\Quest.cpp">
+      <Filter>srcs</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
