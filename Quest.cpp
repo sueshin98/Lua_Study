@@ -40,7 +40,11 @@ void Quest::SetRarity(QuestRarity rarity)
 void Quest::SetKillTargetList(std::map<int, QuestKillTarget> targetList)
 {
 	questKillTargetList_ = targetList;
-};
+}
+void Quest::SetNormalTarget(std::string questNormalTarget)
+{
+	questNormalTarget_ = questNormalTarget;
+}
 
 void Quest::SetName(const char* name)
 {
@@ -79,7 +83,11 @@ QuestRarity Quest::GetRarity()
 std::map<int, QuestKillTarget>& Quest::GetKillTargetList()
 {
 	return questKillTargetList_;
-};
+}
+std::string Quest::GetNormalTarget()
+{
+	return questNormalTarget_;
+}
 
 std::string Quest::GetName()
 {

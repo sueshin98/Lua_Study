@@ -2,6 +2,7 @@
 #include "Player.hpp"
 #include "Monster.hpp"
 #include "Quest.hpp"
+#include "Field.hpp"
 #include "BattleEvent.hpp"
 
 namespace CLua
@@ -16,7 +17,11 @@ namespace CLua
 	void CLua::RegisterClass()
 	{
 		lua.new_usertype<Player>("Player",
+			"CheckPlayerAlive", &Player::CheckPlayerAlive,
+			"AddItem", &Player::AddItem,
 			"DecreaseHP", &Player::DecreaseHP,
+			"IncreaseExp", &Player::IncreaseExp,
+			"IncreaseGold", &Player::IncreaseGold,
 
 			"GetLevel", &Player::GetLevel,
 			"GetGrade", &Player::GetGrade,
@@ -53,31 +58,33 @@ namespace CLua
 			"SetDescription", &Quest::SetDescription
 		);
 
-		lua.new_usertype<Monster>("Monster"
-			/*"CheckMonsterAlive", &Monster::CheckMonsterAlive,
+		lua.new_usertype<Monster>("Monster",
+			"CheckMonsterAlive", &Monster::CheckMonsterAlive,
 			"Attack", &Monster::Attack,
 			"Guard", &Monster::Guard,
 			"TryRun", &Monster::TryRun,
 
 			"GetMonsterID", &Monster::GetMonsterID,
 			"GetName", &Monster::GetName,
+			"GetLevel", &Monster::GetLevel,
 			"GetState", &Monster::GetState,
 			"GetSpeed", &Monster::GetSpeed,
-			"GetAttack", &Monster::GetAttack,
-			"GetDefense", &Monster::GetDefense,
+			"GetAtk", &Monster::GetAtk,
+			"GetDef", &Monster::GetDef,
 			"GetHP", &Monster::GetHP,
 			"GetMP", &Monster::GetMP,
 			"GetName", &Monster::GetName,
 
 			"SetMonsterID", &Monster::SetMonsterID,
 			"SetName", &Monster::SetName,
+			"SetLevel", &Monster::SetLevel,
 			"SetState", &Monster::SetState,
 			"SetSpeed", &Monster::SetSpeed,
-			"SetAttack", &Monster::SetAttack,
-			"SetDefense", &Monster::SetDefense,
+			"SetAtk", &Monster::SetAtk,
+			"SetDef", &Monster::SetDef,
 			"SetHP", &Monster::SetHP,
 			"SetMP", &Monster::SetMP,
-			"SetName", &Monster::SetName*/
+			"SetName", &Monster::SetName
 		);
 
 		lua.new_usertype<BattleEvent>("BattleEvent",
@@ -88,6 +95,12 @@ namespace CLua
 			"MonsterRun", &BattleEvent::MonsterRun,
 			"PlayerRun", &BattleEvent::PlayerRun
 		);
+
+		/*lua.new_enum("Monster_State",
+			"Normal", MONSTER_STATE::Normal,
+			"Fear", MONSTER_STATE::Fear,
+			"Excitement", MONSTER_STATE::Excitement
+		);*/
 	}
 
 	void CLua::RegisterScripts()
@@ -126,8 +139,25 @@ namespace CLua
 		);
 
 		while (true) {
-			//std::this_thread::sleep_for(std::chrono::seconds(1));
+			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
+	}
+
+	/// <summary>
+	/// Quest
+	/// </summary>
+
+	std::list<std::string> CLua::GetQuestList()
+	{
+		std::list<std::string> questList;
+
+		sol::table questIdTable = lua["Quest"]["id"];
+
+		for (auto& pair : questIdTable) {
+			questList.push_back(pair.first.as<std::string>());
+		}
+
+		return questList;
 	}
 
 	Quest CLua::GetQuest(int questId)
@@ -143,7 +173,12 @@ namespace CLua
 		int questType = lua[questName]["type"];
 		quest.SetType(static_cast<QuestType>(questType));
 
-		if (questType == lua["quest"]["type"]["Kill"])
+		std::string questNormalTarget = lua[questName]["normalTarget"];
+		if (questNormalTarget.empty() == false) {
+			quest.SetNormalTarget(questNormalTarget);
+		}
+
+		if (questType == lua["Quest"]["type"]["Kill"])
 		{
 			std::map<int, QuestKillTarget> questTargetList;
 			sol::table targets = lua[questName]["killTarget"];
@@ -159,7 +194,7 @@ namespace CLua
 			}
 			quest.SetKillTargetList(questTargetList);
 		}
-
+		
 		QuestReward questReward;
 		auto reward = lua[questName]["reward"];
 		if (reward["exp"] != NULL) {
@@ -204,7 +239,54 @@ namespace CLua
 	}
 
 	/// <summary>
-	/// 
+	/// Field
+	/// </summary>
+	
+	std::list<std::string> CLua::GetFieldList()
+	{
+		std::list<std::string> fieldList;
+
+		sol::table fieldIdTable = lua["Field"]["id"];
+
+		for (auto& pair : fieldIdTable) {
+			fieldList.push_back(pair.first.as<std::string>());
+		}
+
+		return fieldList;
+	}
+
+	Field CLua::GetField(int fieldId)
+	{
+		auto fieldName = GetFieldName(fieldId);
+		Field field(fieldId, fieldName);
+
+		sol::function GenerateMonster;
+		GenerateMonster = lua[fieldName]["generateMonster"];
+		sol::table generatedMonsterListTable = GenerateMonster();
+
+		std::list<int> generatedMonsterList;
+		for (auto& generatedMonster : generatedMonsterListTable) {
+			int monsterId = generatedMonster.second.as<int>();
+			generatedMonsterList.push_back(monsterId);
+		}
+		field.SetMonsterList(generatedMonsterList);
+
+		return field;
+	}
+
+	bool CLua::CheckEnterField(int fieldId, Player* player)
+	{
+		sol::function CheckEnterField;
+
+		CheckEnterField = lua[GetFieldName(fieldId)]["checkEnterField"];
+
+		auto result = CheckEnterField(player);
+
+		return result;
+	}
+
+	/// <summary>
+	/// Monster
 	/// </summary>
 
 	Monster CLua::GetMonster(int monsterId)
@@ -213,8 +295,8 @@ namespace CLua
 		Monster monster(monsterId, monsterName);
 
 		monster.SetSpeed(lua[monsterName]["speed"]);
-		monster.SetAttack(lua[monsterName]["attack"]);
-		monster.SetDefense(lua[monsterName]["defense"]);
+		monster.SetAtk(lua[monsterName]["attack"]);
+		monster.SetDef(lua[monsterName]["defense"]);
 		monster.SetHP(lua[monsterName]["hp"]);
 		monster.SetMP(lua[monsterName]["mp"]);
 
@@ -267,7 +349,7 @@ namespace CLua
 
 	int CLua::GetQuestID(std::string questName)
 	{
-		auto questId = lua["quest"]["id"][questName];
+		auto questId = lua["Quest"]["id"][questName];
 
 		if (questId.valid() == false) {
 			return -1;
@@ -278,7 +360,7 @@ namespace CLua
 
 	int CLua::GetMonsterID(std::string monsterName)
 	{
-		auto monsterId = lua["monster"]["id"][monsterName];
+		auto monsterId = lua["Monster"]["id"][monsterName];
 
 		if (monsterId.valid() == false) {
 			return -1;
@@ -287,9 +369,20 @@ namespace CLua
 		return monsterId.get<int>();
 	}
 
+	int CLua::GetFieldID(std::string fieldName)
+	{
+		auto fieldId = lua["Field"]["id"][fieldName];
+
+		if (fieldId.valid() == false) {
+			return -1;
+		}
+
+		return fieldId.get<int>();
+	}
+
 	std::string CLua::GetQuestName(int questId)
 	{
-		sol::table questIdTable = lua["quest"]["id"];
+		sol::table questIdTable = lua["Quest"]["id"];
 
 		for (auto& pair : questIdTable) {
 			int id = pair.second.as<int>();
@@ -303,7 +396,7 @@ namespace CLua
 
 	std::string CLua::GetMonsterName(int monsterId)
 	{
-		sol::table monsterIdTable = lua["monster"]["id"];
+		sol::table monsterIdTable = lua["Monster"]["id"];
 
 		for (auto& pair : monsterIdTable) {
 			int id = pair.second.as<int>();
@@ -327,5 +420,19 @@ namespace CLua
 		}
 
 		throw std::exception("Item not found");
+	}
+
+	std::string CLua::GetFieldName(int fieldId)
+	{
+		sol::table fieldIdTable = lua["Field"]["id"];
+
+		for (auto& pair : fieldIdTable) {
+			int id = pair.second.as<int>();
+			if (id == fieldId) {
+				return pair.first.as<std::string>();
+			}
+		}
+
+		throw std::exception("Field not found");
 	}
 }

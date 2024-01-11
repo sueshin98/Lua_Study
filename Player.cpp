@@ -2,17 +2,53 @@
 #include "CLua.hpp"
 #include "Quest.hpp"
 #include "Monster.hpp"
+#include "Field.hpp"
 #include "BattleEvent.hpp"
 
 Player::Player()
 {
 	playerLevel_ = 1;
 	playerGrade = 1;
+	playerExp_ = 0;
+	playerGold_ = 0;
+	playerAtk_ = 10;
+	playerDef_ = 5;
+	playerSpeed_ = 10;
+	playerHP_ = 100;
+	playerMP_ = 100;
 }
 
 bool Player::CheckPlayerAlive()
 {
 	return (playerHP_ > 0);
+}
+
+void Player::DecreaseHP(int damage)
+{
+	playerHP_ -= damage;
+}
+
+void Player::AddItem(int itemId, int amount)
+{
+	std::cout << "아이템 [" << CLua::GetItemName(itemId) << "] " << amount << "개 획득!" << std::endl;
+}
+
+void Player::IncreaseExp(int exp)
+{
+	std::cout << "경험치 " << exp << " 획득!" << std::endl;
+	playerExp_ += exp;
+
+	if (exp >= 100) {
+		std::cout << "레벨업!" << std::endl;
+		playerLevel_++;
+		playerExp_ -= 100;
+	}
+}
+
+void Player::IncreaseGold(int gold)
+{
+	std::cout << "골드 " << gold << " 획득!" << std::endl;
+	playerGold_ += gold;
 }
 
 /// <summary>
@@ -31,6 +67,11 @@ void Player::ReadQuest(int questId)
 	auto questType = quest.GetType();
 
 	std::cout << "퀘스트 목표" << std::endl;
+	if (quest.GetNormalTarget().empty() == false) {
+		std::cout << "	" << quest.GetNormalTarget() << std::endl;
+	}	
+	std::cout << std::endl;
+
 	auto& targetList = quest.GetKillTargetList();
 	if (targetList.empty() == false) {
 		for (auto& target : targetList) {
@@ -48,6 +89,14 @@ void Player::ReadQuest(int questId)
 		std::cout << CLua::GetItemName(std::get<0>(item)) << "(" << std::get<1>(item) << ") ";
 	}
 	std::cout << std::endl << "==================================" << std::endl;
+	std::cout << "input \"exit\" to return" << std::endl;
+
+	std::string input;
+	
+	while (std::cout << ">> " && std::getline(std::cin, input) && input != "exit")
+	{
+
+	}
 }
 
 bool Player::AcceptQuest(int questId)
@@ -120,97 +169,205 @@ void Player::UpdateKillQuestProgress(int monsterId)
 			auto& targetList = quest->GetKillTargetList();
 
 			auto target = targetList.find(monsterId);
-			if (target != targetList.end())
-			{
+			if (target != targetList.end()) {
 				target->second.targetCount++;
 
-				std::cout << target->second.targetCount << std::endl;
+				std::cout << CLua::GetMonsterName(target->first) << " : ";
+				std::cout << target->second.targetCount << " / " << target->second.targetAmount << std::endl;
+
+				if (CLua::CheckClearQuest(quest->GetQuestID(), this, quest) == true) {
+					std::cout << "퀘스트 " << quest->GetName() << " 목표 달성!" << std::endl;
+				}
 			}
 		}
 	}
 }
 
-void Player::DecreaseHP(int damage)
-{
-	playerHP_ -= damage;
-}
+/// <summary>
+/// Field
+/// </summary>
 
-bool Player::HandleBattleEvent(BattleEvent& battleEvent)
+bool Player::EnterField(int fieldId)
 {
-	auto event = battleEvent.GetEvent();
-	switch (event)
-	{
-		case BATTLE_EVENT::MonsterDead:
-		{
-			CLua::ProvideBattleReward(this, monster_);
-			UpdateKillQuestProgress(monster_->GetMonsterID());
-			break;
+	if (field_ != NULL) {
+		if (field_->GetID() == fieldId) {
+			return true;
 		}
-		case BATTLE_EVENT::PlayerDead:
-		{
-			std::cout << "Player Win!" << std::endl;
-			break;
-		}
-		case BATTLE_EVENT::MonsterRun:
-		{
-			std::cout << "Monster Run!" << std::endl;
-			break;
-		}
-		case BATTLE_EVENT::PlayerRun:
-		{
-			std::cout << "Player Run!" << std::endl;
-			break;
+		else {
+			std::cout << "Already Entered Another Field" << std::endl;
+			return false;
 		}
 	}
 
-	return (event != BATTLE_EVENT::None);
+	auto result = CLua::CheckEnterField(fieldId, this);
+
+	if (result == true) {
+		auto field = new Field(CLua::GetField(fieldId));
+
+		field_ = field;
+
+		std::cout << "Enter Field!" << std::endl;
+	}
+	else {
+		std::cout << "Cannot Enter!" << std::endl;
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+		return false;
+	}
+
+	return true;
 }
+
+void Player::ExitField()
+{
+	if (field_ == NULL) {
+		std::cout << "Not Entered Field" << std::endl;
+		return;
+	}
+
+	std::cout << "Exit Field!" << std::endl;
+
+	delete(field_);
+	field_ = NULL;
+}
+
+Monster* Player::GetFieldMonster(int index)
+{
+	auto monsterList = field_->GetMonsterList();
+
+	return monsterList[index];
+}
+
+std::list<std::string> Player::GetFieldMonsterList()
+{
+	auto monsterList = field_->GetMonsterList();
+
+	auto monsterNameList = std::list<std::string>();
+
+	for (auto monster : monsterList) {
+		monsterNameList.push_back(monster->GetName());
+	}
+
+	return monsterNameList;
+}
+
+
+/// <summary>
+/// Battle
+/// </summary>
 
 void Player::BattlePlayerTurn(BattleEvent& event)
 {
+	if (monster_->CheckMonsterAlive() == false || CheckPlayerAlive() == false) {
+		return;
+	} 
 
+	event.HandleBattleProcessEvent();
+	
+	if (monster_->CheckMonsterAlive() == false) {
+		event.MonsterDead();
+	}
+	else if (CheckPlayerAlive() == false) {
+		event.PlayerDead();
+	}
 }
 
 void Player::ProcessBattle()
 {
-	BattleEvent event;
+	BattleEvent event(this, monster_);
 
 	while (monster_->CheckMonsterAlive() && CheckPlayerAlive()) {
-		auto isPlayerFirst = CLua::CheckBattleTurn(this, monster_);
+		system("cls");
+		std::cout << "[Player] HP : " << playerHP_ << std::endl;
+		std::cout << "[Monster] HP : " << monster_->GetHP() << std::endl;
 
-		if (isPlayerFirst == false) {
-			CLua::BattleMonsterTurn(this, monster_, event);
-			if (HandleBattleEvent(event)) {
-				break;
+		std::cout << "플레이어의 행동을 선택해주십시오." << std::endl;
+		std::cout << "=================================" << std::endl;
+		std::cout << "1.공격 / 2.스킬 / 3.아이템 / 4.도망" << std::endl;
+		std::cout << "=================================" << std::endl;
+
+		std::cout << ">> ";
+		std::string input;
+		std::getline(std::cin, input);
+		
+		try {
+			auto inputNum = std::stoi(input);
+
+			switch (inputNum)
+			{
+				case 1:
+				{
+					event.SetEvent(BATTLE_EVENT::PlayerAttack);
+					break;
+				}
+				case 2:
+				{
+					event.SetEvent(BATTLE_EVENT::PlayerSkill);
+					break;
+				}
+				case 3:
+				{
+					event.SetEvent(BATTLE_EVENT::PlayerItem);
+					break;
+				}
+				case 4:
+				{
+					event.SetEvent(BATTLE_EVENT::PlayerTryRun);
+					break;
+				}
+				default:
+				{
+					std::cout << "Invalid Input" << std::endl;
+					std::this_thread::sleep_for(std::chrono::seconds(1));
+					continue;
+				}
 			}
-			BattlePlayerTurn(event);
-			if (HandleBattleEvent(event)) {
-				break;
+
+			auto isPlayerFirst = CLua::CheckBattleTurn(this, monster_);
+
+			if (isPlayerFirst == true) {
+				std::cout << "플레이어 선공!" << std::endl;
+				BattlePlayerTurn(event);
+				CLua::BattleMonsterTurn(this, monster_, event);
 			}
+			else {
+				std::cout << "플레이어 후공!" << std::endl;
+				CLua::BattleMonsterTurn(this, monster_, event);
+				BattlePlayerTurn(event);
+			}
+			std::this_thread::sleep_for(std::chrono::seconds(2));
 		}
-		else {
-			BattlePlayerTurn(event);
-			if (HandleBattleEvent(event)) {
-				break;
-			}
-			CLua::BattleMonsterTurn(this, monster_, event);
-			if (HandleBattleEvent(event)) {
-				break;
-			}
+		catch (std::exception& e)
+		{
+			std::cout << "Invalid Input" << std::endl;
+			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 	}
+
+	FinishBattle(event);
 }
 
-void Player::StartBattle(int monsterId)
+void Player::StartBattle(Monster *monster)
 {
-	auto monster = new Monster(CLua::GetMonster(monsterId));
 	monster_ = monster;
 
+	std::cout << monster->GetName() << " 와(과)의 전투 개시" << std::endl;
 	CLua::InitBattle(this, monster);
 
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	ProcessBattle();
 }
 
+void Player::FinishBattle(BattleEvent& event)
+{
+	std::cout <<  "전투 종료!" << std::endl;
+
+	event.HandleBattleResultEvent();
+
+	std::this_thread::sleep_for(std::chrono::seconds(2));
+
+	field_->MonsterDead(monster_);
+	monster_ = NULL;
+}
 
 /// <summary>
 /// 

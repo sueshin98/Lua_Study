@@ -1,27 +1,46 @@
+#include <map>
+#include <functional>
+
 enum class BATTLE_EVENT
 {
 	None,
 	MonsterDead,
 	PlayerDead,
 	MonsterRun,
-	PlayerRun
+	PlayerRun,
+	PlayerAttack,
+	PlayerSkill,
+	PlayerItem,
+	PlayerGuard,
+	PlayerTryRun
 };
+
+class Player;
+class Monster;
 
 class BattleEvent
 {
 public:
-	BattleEvent() {}
+	BattleEvent(Player* player, Monster* monster);
 	~BattleEvent() {}
 
-	void SetEvent(BATTLE_EVENT event) { event_ = event; }
-	BATTLE_EVENT GetEvent() { return event_; }
+	void Init();
+	void HandleBattleProcessEvent();
+	void HandleBattleResultEvent();
 
-	void MonsterDead() { event_ = BATTLE_EVENT::MonsterDead; }
-	void PlayerDead() { event_ = BATTLE_EVENT::PlayerDead; }
-	void MonsterRun() { event_ = BATTLE_EVENT::MonsterRun; }
-	void PlayerRun() { event_ = BATTLE_EVENT::PlayerRun; }
+	void SetEvent(BATTLE_EVENT event);
+	BATTLE_EVENT GetEvent();
+
+	void MonsterDead();
+	void PlayerDead();
+	void MonsterRun();
+	void PlayerRun();
 
 private:
+	std::map<BATTLE_EVENT, std::function<void()>> battleResultHandler;
+	std::map<BATTLE_EVENT, std::function<void()>> battleProcessHandler;
 	BATTLE_EVENT event_;
+	Player* player_;
+	Monster* monster_;
 
 };

@@ -6,19 +6,28 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Quest.cpp" />
     <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="BattleEvent.cpp" />
+    <ClCompile Include="Field.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CLua.hpp" />
     <ClInclude Include="Define.hpp" />
-    <ClInclude Include="magic_enum.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="Quest.hpp" />
     <ClInclude Include="sol\config.hpp" />
-    <ClInclude Include="sol\sol.hpp" />
     <ClInclude Include="Item.hpp" />
-    <ClInclude Include="watcher.hpp" />
     <ClInclude Include="Monster.hpp" />
     <ClInclude Include="BattleEvent.hpp" />
+    <ClInclude Include="Field.hpp" />
+    <ClInclude Include="Include\config.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\sol.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\watcher.hpp">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="scripts">
@@ -30,22 +39,46 @@
     <Filter Include="scripts\Base">
       <UniqueIdentifier>{675334b4-5b74-4884-89dd-77c31735d782}</UniqueIdentifier>
     </Filter>
+    <Filter Include="scripts\Monster">
+      <UniqueIdentifier>{9904d474-227a-4b92-87cf-0394a04d26ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts\Field">
+      <UniqueIdentifier>{2d7a09d2-785d-4214-9f68-ba312fbb89ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Include">
+      <UniqueIdentifier>{10f80da6-e43b-4915-80df-72d37539f34f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="scripts\Quest\MonsterSlayer.lua">
       <Filter>scripts\Quest</Filter>
     </None>
-    <None Include="scripts\Quest\quest2.lua">
+    <None Include="scripts\Quest\LevelUp.lua">
       <Filter>scripts\Quest</Filter>
     </None>
     <None Include="scripts\Base\item.lua">
       <Filter>scripts\Base</Filter>
     </None>
-    <None Include="scripts\Base\monster.lua">
+    <None Include="scripts\Base\Monster.lua">
       <Filter>scripts\Base</Filter>
     </None>
-    <None Include="scripts\Base\quest.lua">
+    <None Include="scripts\Base\Quest.lua">
       <Filter>scripts\Base</Filter>
+    </None>
+    <None Include="scripts\Base\field.lua">
+      <Filter>scripts\Base</Filter>
+    </None>
+    <None Include="scripts\Monster\Rat.lua">
+      <Filter>scripts\Monster</Filter>
+    </None>
+    <None Include="scripts\Monster\Slime.lua">
+      <Filter>scripts\Monster</Filter>
+    </None>
+    <None Include="scripts\Field\BeginnerDungeon.lua">
+      <Filter>scripts\Field</Filter>
+    </None>
+    <None Include="scripts\Field\Forest.lua">
+      <Filter>scripts\Field</Filter>
     </None>
   </ItemGroup>
 </Project>

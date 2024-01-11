@@ -1,8 +1,11 @@
 #pragma once
 #include <map>
+#include <list>
+#include <string>
 
 class Quest;
 class Monster;
+class Field;
 class BattleEvent;
 
 class Player
@@ -12,19 +15,27 @@ public:
 	~Player() {}
 
 	bool CheckPlayerAlive();
+	void AddItem(int itemId, int amount);
+	void IncreaseExp(int exp);
+	void IncreaseGold(int gold);
+	void DecreaseHP(int damage);
 
 	void ReadQuest(int questId);
 	bool AcceptQuest(int questId);
 	bool ClearQuest(int questId);
 	void ProvideReward(Quest* quest);
 
-	void StartBattle(int monsterId);
+	bool EnterField(int fieldId);
+	void ExitField();
+	Monster* GetFieldMonster(int index);
+	std::list<std::string> GetFieldMonsterList();
+
+
+	void StartBattle(Monster* monster);
 	void ProcessBattle();
-	bool HandleBattleEvent(BattleEvent& event);
+	void FinishBattle(BattleEvent& event);
 	void BattlePlayerTurn(BattleEvent& event);
 	void UpdateKillQuestProgress(int monsterId);
-	
-	void DecreaseHP(int damage);
 
 	int GetLevel();
 	int GetGrade();
@@ -48,6 +59,7 @@ public:
 
 private:
 	std::map<int, Quest*> questMap_;
+	Field* field_;
 	Monster* monster_;
 
 	int playerLevel_;

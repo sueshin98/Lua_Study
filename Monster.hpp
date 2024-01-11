@@ -21,13 +21,15 @@ public:
 	void Guard();
 	bool TryRun(Player* player);
 
+	void DecreaseHP(int damage);
+
 	int GetMonsterID();
 	std::string GetName();
 	MONSTER_STATE GetState();
 	int GetLevel();
 	int GetSpeed();
-	int GetAttack();
-	int GetDefense();
+	int GetAtk();
+	int GetDef();
 	int GetHP();
 	int GetMP();
 
@@ -36,17 +38,17 @@ public:
 	void SetState(MONSTER_STATE state);
 	void SetLevel(int level);
 	void SetSpeed(int speed);
-	void SetAttack(int atk);
-	void SetDefense(int def);
+	void SetAtk(int atk);
+	void SetDef(int def);
 	void SetHP(int hp);
 	void SetMP(int mp);
 
 private:
 	int monsterId_;
 	std::string monsterName_;
-	MONSTER_STATE monsterState_;
+	MONSTER_STATE monsterState_ = MONSTER_STATE::Normal;
 
-	int monsterLevel_;
+	int monsterLevel_ = 1;
 	int monsterSpeed_;
 	int monsterAtk_;
 	int monsterDef_;

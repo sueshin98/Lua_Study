@@ -47,6 +47,7 @@ public:
 	void SetType(QuestType questType);
 	void SetRarity(QuestRarity questRarity);
 	void SetKillTargetList(std::map<int, QuestKillTarget> targetList);
+	void SetNormalTarget(std::string questNormalTarget);
 	void SetName(const char* questName);
 	void SetDescription(std::string questDescription);
 	void SetReward(QuestReward& questReward);
@@ -55,6 +56,7 @@ public:
 	QuestType GetType();
 	QuestRarity GetRarity();
 	std::map<int, QuestKillTarget>& GetKillTargetList();
+	std::string GetNormalTarget();
 	std::string GetName();
 	std::string GetDescription();
 	QuestReward& GetReward();
@@ -66,6 +68,7 @@ private:
 	QuestReward questReward_;
 	std::map<int, QuestKillTarget> questKillTargetList_;
 	
+	std::string questNormalTarget_;
 	std::string questName_;
 	std::string questDescription_;
 };

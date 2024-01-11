@@ -34,6 +34,12 @@ bool Monster::TryRun(Player* player)
 	return false;
 }
 
+void Monster::DecreaseHP(int damage)
+{
+	monsterHP_ -= damage;
+}
+
+
 /// <summary>
 /// 
 /// </summary>
@@ -50,6 +56,7 @@ std::string Monster::GetName()
 
 MONSTER_STATE Monster::GetState()
 {
+	//return static_cast<int>(monsterState_);
 	return monsterState_;
 }
 
@@ -63,12 +70,12 @@ int Monster::GetSpeed()
 	return monsterSpeed_;
 }
 
-int Monster::GetAttack()
+int Monster::GetAtk()
 {
 	return monsterAtk_;
 }
 
-int Monster::GetDefense()
+int Monster::GetDef()
 {
 	return monsterDef_;
 }
@@ -97,8 +104,14 @@ void Monster::SetName(std::string monsterName)
 	monsterName_ = monsterName;
 }
 
+//void Monster::SetState(MONSTER_STATE state)
+//{
+//	monsterState_ = state;
+//}
+
 void Monster::SetState(MONSTER_STATE state)
 {
+	//monsterState_ = static_cast<MONSTER_STATE>(state);
 	monsterState_ = state;
 }
 
@@ -112,12 +125,12 @@ void Monster::SetSpeed(int speed)
 	monsterSpeed_ = speed;
 }
 
-void Monster::SetAttack(int attack)
+void Monster::SetAtk(int attack)
 {
 	monsterAtk_ = attack;
 }
 
-void Monster::SetDefense(int defense)
+void Monster::SetDef(int defense)
 {
 	monsterDef_ = defense;
 }

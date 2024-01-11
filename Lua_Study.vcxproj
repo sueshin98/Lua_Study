@@ -105,14 +105,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)../lualib/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)/lualib/include</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)../lualib</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(ProjectDir)../lualib/lua54.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)/lualib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>$(ProjectDir)/lualib/lua54.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -132,7 +132,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BattleEvent.cpp" />
     <ClCompile Include="CLua.cpp" />
+    <ClCompile Include="Field.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Player.cpp" />
@@ -142,21 +144,27 @@
     <ClInclude Include="BattleEvent.hpp" />
     <ClInclude Include="CLua.hpp" />
     <ClInclude Include="Define.hpp" />
-    <ClInclude Include="watcher.hpp" />
+    <ClInclude Include="Field.hpp" />
+    <ClInclude Include="Include\config.hpp" />
+    <ClInclude Include="Include\sol.hpp" />
+    <ClInclude Include="Include\watcher.hpp" />
     <ClInclude Include="Item.hpp" />
-    <ClInclude Include="magic_enum.hpp" />
     <ClInclude Include="Monster.hpp" />
     <ClInclude Include="Player.hpp" />
     <ClInclude Include="Quest.hpp" />
     <ClInclude Include="sol\config.hpp" />
-    <ClInclude Include="sol\sol.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="scripts\Base\field.lua" />
     <None Include="scripts\Base\item.lua" />
-    <None Include="scripts\Base\monster.lua" />
-    <None Include="scripts\Base\quest.lua" />
+    <None Include="scripts\Base\Monster.lua" />
+    <None Include="scripts\Base\Quest.lua" />
+    <None Include="scripts\Field\BeginnerDungeon.lua" />
+    <None Include="scripts\Field\Forest.lua" />
+    <None Include="scripts\Monster\Rat.lua" />
+    <None Include="scripts\Monster\Slime.lua" />
     <None Include="scripts\Quest\MonsterSlayer.lua" />
-    <None Include="scripts\Quest\quest2.lua" />
+    <None Include="scripts\Quest\LevelUp.lua" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

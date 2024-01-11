@@ -1,21 +1,19 @@
-quest = quest or {}
+Quest = Quest or {}
 
-quest.id = {
+Quest.id = {
 	MonsterSlayer = 1001,
-	QUEST2 = 1002,
-	QUEST3 = 1003,
-	QUEST4 = 1004
+	LevelUp = 1002
 }
 
-quest.rarity = {
+Quest.rarity = {
 	Common = 0,
 	Rare = 1,
 	Unique = 2,
 	Legendary = 3
 }
 
-quest.type = {
-	NONE = 0,
+Quest.type = {
+	None = 0,
 	Kill = 1,
 	Collect = 2,
 	Explore = 3
